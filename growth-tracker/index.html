@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>Growth Tracker - Holistic Development</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.svg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6C63FF;
+            --secondary: #4ECDC4;
+            --accent: #FF6B6B;
+            --success: #51CF66;
+            --warning: #FFD93D;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --light: #f8f9fa;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --border: #dfe6e9;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text);
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .header .date {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 15px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            font-size: 24px;
+        }
+
+        .routine-block {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+        }
+
+        .routine-block h3 {
+            font-size: 16px;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .habit-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .habit-item.completed {
+            background: linear-gradient(135deg, rgba(81, 207, 102, 0.1), rgba(78, 205, 196, 0.1));
+            border-left: 4px solid var(--success);
+        }
+
+        .habit-item label {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox.checked {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+        }
+
+        .pillar-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .pillar-card {
+            padding: 15px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, var(--light), white);
+            border-left: 4px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pillar-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .pillar-card.technical { border-left-color: #667eea; }
+        .pillar-card.spiritual { border-left-color: #f093fb; }
+        .pillar-card.financial { border-left-color: #4facfe; }
+        .pillar-card.emotional { border-left-color: #43e97b; }
+        .pillar-card.relational { border-left-color: #fa709a; }
+        .pillar-card.physical { border-left-color: #30cfd0; }
+
+        .pillar-card h4 {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.5s ease;
+            border-radius: 3px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            color: var(--primary);
+        }
+
+        .nav-item .icon {
+            font-size: 20px;
+        }
+
+        .nav-item .label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .book-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .book-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .book-info {
+            flex: 1;
+        }
+
+        .book-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--dark);
+        }
+
+        .book-category {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        .time-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .quote-box {
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(78, 205, 196, 0.1));
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            margin-top: 15px;
+            font-style: italic;
+            color: var(--text);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .close-btn {
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-light);
+            line-height: 1;
+        }
+
+        .streak-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, #FFD93D, #FF6B6B);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Growth Tracker</h1>
+            <div class="date" id="currentDate"></div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number" id="streakCount">0</div>
+                    <div class="label">Day Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="completionRate">0%</div>
+                    <div class="label">Today's Progress</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Routine Page -->
+        <div id="routinePage" class="page active">
+            <!-- Morning Routine -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="icon">🌅</span>
+                        Morning Routine (5:30-8:00 AM)
+                    </h2>
+                </div>
+                <div class="routine-block">
+                    <div class="habit-item" data-habit="morning-prayer">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Prayer & Devotion (30 min)</span>
+                        </label>
+                        <span class="time-badge">5:30</span>
+                    </div>
+                    <div class="habit-item" data-habit="morning-exercise">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Exercise/Movement (30 min)</span>
+                        </label>
+                        <span class="time-badge">6:00</span>
+                    </div>
+                    <div class="habit-item" data-habit="morning-reading">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Read Personal Dev Book (30 min)</span>
+                        </label>
+                        <span class="time-badge">6:45</span>
+                    </div>
+                    <div class="habit-item" data-habit="morning-planning">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Day Planning & Priorities</span>
+                        </label>
+                        <span class="time-badge">7:30</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day Learning Blocks -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="icon">🎯</span>
+                        Deep Work Blocks (9:00-5:00 PM)
+                    </h2>
+                </div>
+                <div class="routine-block">
+                    <h3>Block 1: AI/ML Research (9:00-11:30)</h3>
+                    <div class="habit-item" data-habit="ai-research">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Study AI/ML concepts (1 hour)</span>
+                        </label>
+                    </div>
+                    <div class="habit-item" data-habit="ai-practice">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Hands-on coding/projects (1.5 hours)</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="routine-block">
+                    <h3>Block 2: Technical Skills (1:00-3:00)</h3>
+                    <div class="habit-item" data-habit="technical-learning">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Advanced topics (Agentic AI, MLOps)</span>
+                        </label>
+                    </div>
+                    <div class="habit-item" data-habit="technical-project">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Build/Deploy something</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="routine-block">
+                    <h3>Block 3: Professional Development (3:00-5:00)</h3>
+                    <div class="habit-item" data-habit="professional-learning">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Leadership/Communication study</span>
+                        </label>
+                    </div>
+                    <div class="habit-item" data-habit="professional-practice">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Practice writing/speaking</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evening Routine -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="icon">🌆</span>
+                        Evening Routine (6:00-9:00 PM)
+                    </h2>
+                </div>
+                <div class="routine-block">
+                    <div class="habit-item" data-habit="evening-marriage">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Quality time with spouse (1 hour)</span>
+                        </label>
+                        <span class="time-badge">6:00</span>
+                    </div>
+                    <div class="habit-item" data-habit="evening-finance">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Financial review/planning (30 min)</span>
+                        </label>
+                        <span class="time-badge">7:30</span>
+                    </div>
+                    <div class="habit-item" data-habit="evening-reading">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Read relationship/spiritual book</span>
+                        </label>
+                        <span class="time-badge">8:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Night Routine -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="icon">🌙</span>
+                        Night Routine (9:00-10:00 PM)
+                    </h2>
+                </div>
+                <div class="routine-block">
+                    <div class="habit-item" data-habit="night-reflection">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Daily reflection & gratitude</span>
+                        </label>
+                        <span class="time-badge">9:00</span>
+                    </div>
+                    <div class="habit-item" data-habit="night-planning">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Plan tomorrow's priorities</span>
+                        </label>
+                        <span class="time-badge">9:20</span>
+                    </div>
+                    <div class="habit-item" data-habit="night-winddown">
+                        <label>
+                            <div class="checkbox"></div>
+                            <span>Wind-down routine (no screens)</span>
+                        </label>
+                        <span class="time-badge">9:30</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Growth Pillars Page -->
+        <div id="pillarsPage" class="page">
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="icon">⚡</span>
+                        Growth Pillars
+                    </h2>
+                </div>
+                <div class="pillar-grid">
+                    <div class="pillar-card technical" onclick="openPillarModal('technical')">
+                        <h4>🤖 Technical/AI</h4>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%" data-pillar="technical"></div>
+                        </div>
+                    </div>
+                    <div class="pillar-card spiritual" onclick="openPillarModal('spiritual')">
+                        <h4>🙏 Spiritual</h4>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%" data-pillar="spiritual"></div>
+                        </div>
+                    </div>
+                    <div class="pillar-card financial" onclick="openPillarModal('financial')">
+                        <h4>💰 Financial</h4>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%" data-pillar="financial"></div>
+                        </div>
+                    </div>
+                    <div class="pillar-card emotional" onclick="openPillarModal('emotional')">
+                        <h4>🧠 Emotional</h4>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%" data-pillar="emotional"></div>
+                        </div>
+                    </div>
+                    <div class="pillar-card relational" onclick="openPillarModal('relational')">
+                        <h4>❤️ Relationship</h4>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%" data-pillar="relational"></div>
+                        </div>
+                    </div>
+                    <div class="pillar-card physical" onclick="openPillarModal('physical')">
+                        <h4>💪 Physical</h4>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%" data-pillar="physical"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "The man who seeks excellence in one area while neglecting others builds a house on sand. True mastery is holistic growth." - Your Growth Journey
+                </div>
+            </div>
+        </div>
+
+        <!-- Books Page -->
+        <div id="booksPage" class="page">
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="icon">📚</span>
+                        Reading List
+                    </h2>
+                </div>
+
+                <h3 style="margin-bottom: 10px; color: var(--primary);">Technical/AI Books</h3>
+                <div id="technicalBooks">
+                    <div class="book-item">
+                        <input type="checkbox" data-book="agentic-ai">
+                        <div class="book-info">
+                            <div class="book-title">Agentic AI Engineering (Yi Zhou)</div>
+                            <div class="book-category">AI/ML • Core</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="generative-dl">
+                        <div class="book-info">
+                            <div class="book-title">Generative Deep Learning</div>
+                            <div class="book-category">AI/ML • Advanced</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="ai-engineering">
+                        <div class="book-info">
+                            <div class="book-title">AI Engineering (O'Reilly)</div>
+                            <div class="book-category">AI/ML • Professional</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="driving-data-projects">
+                        <div class="book-info">
+                            <div class="book-title">Driving Data Projects</div>
+                            <div class="book-category">AI/ML • Leadership</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="practical-mlops">
+                        <div class="book-info">
+                            <div class="book-title">Practical MLOps (O'Reilly)</div>
+                            <div class="book-category">AI/ML • Operations</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="causal-inference">
+                        <div class="book-info">
+                            <div class="book-title">Causal Inference in Python (O'Reilly)</div>
+                            <div class="book-category">AI/ML • Advanced</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="essential-math">
+                        <div class="book-info">
+                            <div class="book-title">Essential Math for Data Science (O'Reilly)</div>
+                            <div class="book-category">AI/ML • Foundation</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="data-viz">
+                        <div class="book-info">
+                            <div class="book-title">Fundamentals of Data Visualization (O'Reilly)</div>
+                            <div class="book-category">AI/ML • Communication</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 20px 0 10px; color: var(--primary);">Personal Development</h3>
+                <div id="personalBooks">
+                    <div class="book-item">
+                        <input type="checkbox" data-book="promises-giants">
+                        <div class="book-info">
+                            <div class="book-title">The Promises of Giants (John Amaechi)</div>
+                            <div class="book-category">Leadership • Character</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="100-days-favor">
+                        <div class="book-info">
+                            <div class="book-title">100 Days of Favor (Joseph Prince)</div>
+                            <div class="book-category">Spiritual • Daily</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="confidence">
+                        <div class="book-info">
+                            <div class="book-title">Confidence (Ronie Margulis)</div>
+                            <div class="book-category">Personal • Growth</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="stolen-focus">
+                        <div class="book-info">
+                            <div class="book-title">Stolen Focus (Johann Hari)</div>
+                            <div class="book-category">Productivity • Focus</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="on-failure">
+                        <div class="book-info">
+                            <div class="book-title">On Failure</div>
+                            <div class="book-category">Resilience • Growth</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="leading-anywhere">
+                        <div class="book-info">
+                            <div class="book-title">Leading Anywhere (David Burkus)</div>
+                            <div class="book-category">Leadership • Modern</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="economics">
+                        <div class="book-info">
+                            <div class="book-title">Economics (Samli Knight)</div>
+                            <div class="book-category">Financial • Foundation</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="point-man">
+                        <div class="book-info">
+                            <div class="book-title">Point Man (Steve Farrar)</div>
+                            <div class="book-category">Relationship • Marriage</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="become-better-you">
+                        <div class="book-info">
+                            <div class="book-title">Become a Better You (Joel Osteen)</div>
+                            <div class="book-category">Spiritual • Growth</div>
+                        </div>
+                    </div>
+                    <div class="book-item">
+                        <input type="checkbox" data-book="making-of-manager">
+                        <div class="book-info">
+                            <div class="book-title">The Making of a Manager</div>
+                            <div class="book-category">Leadership • Management</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reflection Page -->
+        <div id="reflectionPage" class="page">
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="icon">📝</span>
+                        Daily Reflection
+                    </h2>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">What went well today?</label>
+                    <textarea id="winsInput" placeholder="Celebrate your wins..."></textarea>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">What could be improved?</label>
+                    <textarea id="improvementsInput" placeholder="Areas for growth..."></textarea>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Key insights & learnings</label>
+                    <textarea id="insightsInput" placeholder="What did you learn today?"></textarea>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Gratitude</label>
+                    <textarea id="gratitudeInput" placeholder="What are you grateful for?"></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="saveReflection()">Save Reflection</button>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="icon">🎯</span>
+                        Tomorrow's Focus
+                    </h2>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Top 3 priorities</label>
+                    <textarea id="prioritiesInput" placeholder="1. &#10;2. &#10;3. "></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="savePriorities()">Set Priorities</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="switchPage('routine')">
+            <span class="icon">📋</span>
+            <span class="label">Routine</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('pillars')">
+            <span class="icon">⚡</span>
+            <span class="label">Pillars</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('books')">
+            <span class="icon">📚</span>
+            <span class="label">Books</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('reflection')">
+            <span class="icon">📝</span>
+            <span class="label">Reflect</span>
+        </div>
+    </div>
+
+    <!-- Pillar Detail Modal -->
+    <div id="pillarModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Pillar Details</h3>
+                <span class="close-btn" onclick="closePillarModal()">&times;</span>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let appData = {
+            habits: {},
+            books: {},
+            reflections: {},
+            priorities: {},
+            streak: 0,
+            lastActive: null,
+            pillars: {
+                technical: { progress: 0, notes: [] },
+                spiritual: { progress: 0, notes: [] },
+                financial: { progress: 0, notes: [] },
+                emotional: { progress: 0, notes: [] },
+                relational: { progress: 0, notes: [] },
+                physical: { progress: 0, notes: [] }
+            }
+        };
+
+        // Initialize App
+        function initApp() {
+            loadData();
+            setupDate();
+            setupHabitListeners();
+            setupBookListeners();
+            updateStats();
+            checkStreak();
+        }
+
+        // Setup current date
+        function setupDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('growthTrackerData');
+            if (saved) {
+                appData = JSON.parse(saved);
+                restoreUIState();
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('growthTrackerData', JSON.stringify(appData));
+        }
+
+        // Restore UI state from loaded data
+        function restoreUIState() {
+            const today = getTodayKey();
+            const todayHabits = appData.habits[today] || {};
+
+            // Restore habit checkboxes
+            Object.keys(todayHabits).forEach(habitId => {
+                const habitItem = document.querySelector(`[data-habit="${habitId}"]`);
+                if (habitItem && todayHabits[habitId]) {
+                    const checkbox = habitItem.querySelector('.checkbox');
+                    checkbox.classList.add('checked');
+                    habitItem.classList.add('completed');
+                }
+            });
+
+            // Restore book checkboxes
+            const todayBooks = appData.books[today] || {};
+            Object.keys(todayBooks).forEach(bookId => {
+                const bookInput = document.querySelector(`[data-book="${bookId}"]`);
+                if (bookInput && todayBooks[bookId]) {
+                    bookInput.checked = true;
+                }
+            });
+
+            // Restore reflection
+            const todayReflection = appData.reflections[today] || {};
+            if (todayReflection.wins) document.getElementById('winsInput').value = todayReflection.wins;
+            if (todayReflection.improvements) document.getElementById('improvementsInput').value = todayReflection.improvements;
+            if (todayReflection.insights) document.getElementById('insightsInput').value = todayReflection.insights;
+            if (todayReflection.gratitude) document.getElementById('gratitudeInput').value = todayReflection.gratitude;
+
+            // Restore priorities
+            const todayPriorities = appData.priorities[today] || '';
+            if (todayPriorities) document.getElementById('prioritiesInput').value = todayPriorities;
+
+            updateStats();
+        }
+
+        // Get today's key for data storage
+        function getTodayKey() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        }
+
+        // Setup habit checkbox listeners
+        function setupHabitListeners() {
+            document.querySelectorAll('.habit-item').forEach(item => {
+                const checkbox = item.querySelector('.checkbox');
+                const habitId = item.getAttribute('data-habit');
+
+                item.addEventListener('click', (e) => {
+                    if (e.target.tagName !== 'INPUT') {
+                        toggleHabit(habitId, checkbox, item);
+                    }
+                });
+            });
+        }
+
+        // Toggle habit completion
+        function toggleHabit(habitId, checkbox, item) {
+            const today = getTodayKey();
+            if (!appData.habits[today]) appData.habits[today] = {};
+
+            const isCompleted = appData.habits[today][habitId];
+            appData.habits[today][habitId] = !isCompleted;
+
+            checkbox.classList.toggle('checked');
+            item.classList.toggle('completed');
+
+            saveData();
+            updateStats();
+            updatePillarProgress();
+        }
+
+        // Setup book checkbox listeners
+        function setupBookListeners() {
+            document.querySelectorAll('[data-book]').forEach(input => {
+                input.addEventListener('change', () => {
+                    const bookId = input.getAttribute('data-book');
+                    const today = getTodayKey();
+                    if (!appData.books[today]) appData.books[today] = {};
+
+                    appData.books[today][bookId] = input.checked;
+                    saveData();
+                    updatePillarProgress();
+                });
+            });
+        }
+
+        // Update statistics
+        function updateStats() {
+            const today = getTodayKey();
+            const todayHabits = appData.habits[today] || {};
+
+            const totalHabits = document.querySelectorAll('[data-habit]').length;
+            const completedHabits = Object.values(todayHabits).filter(v => v).length;
+            const completionRate = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0;
+
+            document.getElementById('completionRate').textContent = `${completionRate}%`;
+            document.getElementById('streakCount').textContent = appData.streak;
+        }
+
+        // Check and update streak
+        function checkStreak() {
+            const today = getTodayKey();
+            const yesterday = getYesterdayKey();
+
+            if (appData.lastActive === yesterday) {
+                // Continue streak if completed yesterday
+                const yesterdayHabits = appData.habits[yesterday] || {};
+                const completedCount = Object.values(yesterdayHabits).filter(v => v).length;
+                if (completedCount >= 5) { // At least 5 habits completed
+                    if (appData.lastActive !== today) {
+                        appData.streak++;
+                    }
+                }
+            } else if (appData.lastActive !== today && appData.lastActive !== yesterday) {
+                // Reset streak if missed a day
+                appData.streak = 0;
+            }
+
+            appData.lastActive = today;
+            saveData();
+            updateStats();
+        }
+
+        // Get yesterday's key
+        function getYesterdayKey() {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            return `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+        }
+
+        // Update pillar progress
+        function updatePillarProgress() {
+            const today = getTodayKey();
+            const todayHabits = appData.habits[today] || {};
+
+            // Calculate progress for each pillar based on completed habits
+            const pillarMapping = {
+                technical: ['ai-research', 'ai-practice', 'technical-learning', 'technical-project'],
+                spiritual: ['morning-prayer', 'evening-reading'],
+                financial: ['evening-finance'],
+                emotional: ['morning-reading', 'night-reflection'],
+                relational: ['evening-marriage', 'professional-practice'],
+                physical: ['morning-exercise', 'night-winddown']
+            };
+
+            Object.keys(pillarMapping).forEach(pillar => {
+                const habits = pillarMapping[pillar];
+                const completed = habits.filter(h => todayHabits[h]).length;
+                const progress = habits.length > 0 ? (completed / habits.length) * 100 : 0;
+
+                const progressBar = document.querySelector(`[data-pillar="${pillar}"]`);
+                if (progressBar) {
+                    progressBar.style.width = `${progress}%`;
+                }
+            });
+        }
+
+        // Save reflection
+        function saveReflection() {
+            const today = getTodayKey();
+            appData.reflections[today] = {
+                wins: document.getElementById('winsInput').value,
+                improvements: document.getElementById('improvementsInput').value,
+                insights: document.getElementById('insightsInput').value,
+                gratitude: document.getElementById('gratitudeInput').value
+            };
+            saveData();
+            alert('Reflection saved!');
+        }
+
+        // Save priorities
+        function savePriorities() {
+            const today = getTodayKey();
+            appData.priorities[today] = document.getElementById('prioritiesInput').value;
+            saveData();
+            alert('Priorities set for tomorrow!');
+        }
+
+        // Switch pages
+        function switchPage(page) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            // Show selected page
+            document.getElementById(`${page}Page`).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Open pillar modal
+        function openPillarModal(pillar) {
+            const modal = document.getElementById('pillarModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+
+            const pillarData = {
+                technical: {
+                    title: '🤖 Technical/AI Growth',
+                    description: 'Building world-class AI/ML skills',
+                    resources: [
+                        'Agentic AI Engineering - Advanced agent systems',
+                        'Generative Deep Learning - Create AI models',
+                        'Practical MLOps - Deploy at scale',
+                        'Essential Math - Foundation for understanding'
+                    ],
+                    goals: [
+                        'Master agentic AI architectures',
+                        'Build and deploy 3 production AI systems',
+                        'Contribute to open-source AI projects',
+                        'Write technical articles/papers'
+                    ]
+                },
+                spiritual: {
+                    title: '🙏 Spiritual Growth',
+                    description: 'Deepening faith and purpose',
+                    resources: [
+                        '100 Days of Favor - Daily devotional',
+                        'Morning prayer and meditation',
+                        'Scripture study and reflection',
+                        'Service and generosity'
+                    ],
+                    goals: [
+                        'Consistent daily devotion',
+                        'Deeper understanding of purpose',
+                        'Lead with integrity and character',
+                        'Impact others positively'
+                    ]
+                },
+                financial: {
+                    title: '💰 Financial Growth',
+                    description: 'Building wealth and security',
+                    resources: [
+                        'Economics fundamentals',
+                        'Investment strategies',
+                        'Passive income streams',
+                        'Financial planning'
+                    ],
+                    goals: [
+                        'Increase income by X%',
+                        'Build emergency fund',
+                        'Create passive income',
+                        'Invest wisely for future'
+                    ]
+                },
+                emotional: {
+                    title: '🧠 Emotional Intelligence',
+                    description: 'Mastering emotions and resilience',
+                    resources: [
+                        'Confidence - Build unshakeable belief',
+                        'On Failure - Learn from setbacks',
+                        'Stolen Focus - Protect your attention',
+                        'Self-awareness practices'
+                    ],
+                    goals: [
+                        'Develop emotional regulation',
+                        'Build genuine confidence',
+                        'Practice mindfulness daily',
+                        'Respond vs react to challenges'
+                    ]
+                },
+                relational: {
+                    title: '❤️ Relationship Growth',
+                    description: 'Strong marriage and connections',
+                    resources: [
+                        'Point Man - Lead in marriage',
+                        'Quality time practices',
+                        'Communication skills',
+                        'Skilled in words - persuasion & empathy'
+                    ],
+                    goals: [
+                        'Daily quality time with spouse',
+                        'Active listening and presence',
+                        'Express appreciation regularly',
+                        'Build deep friendships'
+                    ]
+                },
+                physical: {
+                    title: '💪 Physical Vitality',
+                    description: 'Energy and health optimization',
+                    resources: [
+                        'Morning exercise routine',
+                        'Nutrition fundamentals',
+                        'Sleep optimization',
+                        'Stress management'
+                    ],
+                    goals: [
+                        'Exercise 5x per week',
+                        'Optimize energy levels',
+                        'Build strength and endurance',
+                        'Maintain healthy habits'
+                    ]
+                }
+            };
+
+            const data = pillarData[pillar];
+            modalTitle.textContent = data.title;
+
+            let html = `
+                <p style="margin-bottom: 20px; color: var(--text-light);">${data.description}</p>
+
+                <h4 style="margin-bottom: 10px; color: var(--primary);">Key Resources</h4>
+                <ul style="margin-bottom: 20px; padding-left: 20px;">
+                    ${data.resources.map(r => `<li style="margin-bottom: 8px;">${r}</li>`).join('')}
+                </ul>
+
+                <h4 style="margin-bottom: 10px; color: var(--primary);">Growth Goals</h4>
+                <ul style="margin-bottom: 20px; padding-left: 20px;">
+                    ${data.goals.map(g => `<li style="margin-bottom: 8px;">${g}</li>`).join('')}
+                </ul>
+
+                <div class="input-group">
+                    <label>Add Progress Note</label>
+                    <textarea id="pillarNote" placeholder="What progress did you make today?"></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="savePillarNote('${pillar}')">Save Note</button>
+            `;
+
+            modalBody.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        // Close pillar modal
+        function closePillarModal() {
+            document.getElementById('pillarModal').classList.remove('active');
+        }
+
+        // Save pillar note
+        function savePillarNote(pillar) {
+            const note = document.getElementById('pillarNote').value;
+            if (note) {
+                const today = getTodayKey();
+                if (!appData.pillars[pillar].notes) appData.pillars[pillar].notes = [];
+                appData.pillars[pillar].notes.push({
+                    date: today,
+                    note: note
+                });
+                saveData();
+                alert('Progress note saved!');
+                closePillarModal();
+            }
+        }
+
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', initApp);
+
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(err => console.log('SW registration failed'));
+            });
+        }
+    </script>
+</body>
+</html>
