@@ -64,6 +64,32 @@
             font-size: 14px;
         }
 
+        .day-type-toggle {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            background: var(--light);
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .day-type-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .day-type-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -151,6 +177,11 @@
             border-left: 4px solid var(--success);
         }
 
+        .habit-item.optional {
+            opacity: 0.7;
+            border-left: 2px dashed var(--text-light);
+        }
+
         .habit-item label {
             flex: 1;
             display: flex;
@@ -180,6 +211,25 @@
             content: '✓';
             color: white;
             font-weight: bold;
+        }
+
+        .time-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .day-badge {
+            background: var(--warning);
+            color: var(--dark);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 5px;
         }
 
         .pillar-grid {
@@ -350,15 +400,6 @@
             margin-top: 2px;
         }
 
-        .time-badge {
-            background: var(--primary);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
         .quote-box {
             background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(78, 205, 196, 0.1));
             padding: 15px;
@@ -419,28 +460,6 @@
             line-height: 1;
         }
 
-        .streak-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: linear-gradient(135deg, #FFD93D, #FF6B6B);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 15px;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
         .input-group {
             margin-bottom: 15px;
         }
@@ -466,6 +485,22 @@
             outline: none;
             border-color: var(--primary);
         }
+
+        .info-badge {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--primary);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-top: 10px;
+            border-left: 3px solid var(--primary);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -474,6 +509,17 @@
         <div class="header">
             <h1>Growth Tracker</h1>
             <div class="date" id="currentDate"></div>
+
+            <!-- Day Type Toggle -->
+            <div class="day-type-toggle">
+                <button class="day-type-btn active" data-day-type="weekday" onclick="switchDayType('weekday')">
+                    Weekday
+                </button>
+                <button class="day-type-btn" data-day-type="weekend" onclick="switchDayType('weekend')">
+                    Weekend
+                </button>
+            </div>
+
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="number" id="streakCount">0</div>
@@ -486,165 +532,325 @@
             </div>
         </div>
 
-        <!-- Daily Routine Page -->
+        <!-- WEEKDAY Routine Page -->
         <div id="routinePage" class="page active">
-            <!-- Morning Routine -->
-            <div class="section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <span class="icon">🌅</span>
-                        Morning Routine (5:30-8:00 AM)
-                    </h2>
+            <!-- Weekday Schedule -->
+            <div id="weekdaySchedule" class="schedule-content active">
+                <!-- Morning Routine -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="icon">🌅</span>
+                            Morning (6:00-10:30 AM)
+                        </h2>
+                    </div>
+                    <div class="routine-block">
+                        <div class="habit-item" data-habit="morning-devotion">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Prayer & Devotion (while prepping)</span>
+                            </label>
+                            <span class="time-badge">6:00</span>
+                        </div>
+                        <div class="info-badge">
+                            💡 Christian music, confessions, mixing creatine while getting ready
+                        </div>
+                    </div>
+
+                    <div class="routine-block" style="margin-top: 15px;">
+                        <div class="habit-item optional" data-habit="gym-session">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Gym Workout (1.5-2 hrs)</span>
+                            </label>
+                            <span class="time-badge">7:15</span>
+                            <span class="day-badge">M/W/F</span>
+                        </div>
+                        <div class="info-badge">
+                            💪 Mon/Wed/Fri only (work from home days)
+                        </div>
+                    </div>
+
+                    <div class="routine-block" style="margin-top: 15px;">
+                        <div class="habit-item" data-habit="day-planning-wfh">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Day Planning (Work from Home)</span>
+                            </label>
+                            <span class="time-badge">9:30</span>
+                            <span class="day-badge">M/W/F</span>
+                        </div>
+                        <div class="habit-item" data-habit="day-planning-office">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Day Planning (Office Day)</span>
+                            </label>
+                            <span class="time-badge">10:00</span>
+                            <span class="day-badge">T/Th</span>
+                        </div>
+                        <div class="info-badge">
+                            📋 Check one based on your location today
+                        </div>
+                    </div>
                 </div>
-                <div class="routine-block">
-                    <div class="habit-item" data-habit="morning-prayer">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Prayer & Devotion (30 min)</span>
-                        </label>
-                        <span class="time-badge">5:30</span>
+
+                <!-- Lloyds Bank Work -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="icon">💼</span>
+                            Lloyds Bank Work (9-5 PM)
+                        </h2>
                     </div>
-                    <div class="habit-item" data-habit="morning-exercise">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Exercise/Movement (30 min)</span>
-                        </label>
-                        <span class="time-badge">6:00</span>
+                    <div class="routine-block">
+                        <div class="habit-item" data-habit="lloyds-work">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Complete work day</span>
+                            </label>
+                        </div>
+                        <div class="info-badge">
+                            🏢 Mon-Fri: Office (Tue/Thu) or WFH (Mon/Wed/Fri)
+                        </div>
                     </div>
-                    <div class="habit-item" data-habit="morning-reading">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Read Personal Dev Book (30 min)</span>
-                        </label>
-                        <span class="time-badge">6:45</span>
+                </div>
+
+                <!-- Daily Learning Goals -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="icon">📖</span>
+                            Daily Learning
+                        </h2>
                     </div>
-                    <div class="habit-item" data-habit="morning-planning">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Day Planning & Priorities</span>
-                        </label>
-                        <span class="time-badge">7:30</span>
+                    <div class="routine-block">
+                        <div class="habit-item" data-habit="ml-reading">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Read ML book/paper (30+ min)</span>
+                            </label>
+                        </div>
+                        <div class="habit-item" data-habit="personal-dev-reading">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Read personal development book</span>
+                            </label>
+                        </div>
+                        <div class="habit-item" data-habit="code-practice">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Code/try something new</span>
+                            </label>
+                        </div>
+                        <div class="info-badge">
+                            🎯 Non-negotiable daily goals - fit these in whenever possible
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Evening Routine -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="icon">🌆</span>
+                            Evening (8-11 PM)
+                        </h2>
+                    </div>
+                    <div class="routine-block">
+                        <div class="habit-item" data-habit="udacity-work">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Udacity course content (2-3 hrs)</span>
+                            </label>
+                            <span class="time-badge">8/9 PM</span>
+                        </div>
+                        <div class="info-badge">
+                            💻 Building course content for Udacity
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Night Routine -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="icon">🌙</span>
+                            Night (11 PM - 1 AM)
+                        </h2>
+                    </div>
+                    <div class="routine-block">
+                        <div class="habit-item" data-habit="spouse-time">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Quality time with spouse</span>
+                            </label>
+                            <span class="time-badge">Night</span>
+                        </div>
+                        <div class="info-badge">
+                            ❤️ She's in Oklahoma (6 hrs behind) - evening her time = night your time
+                        </div>
+                    </div>
+
+                    <div class="routine-block" style="margin-top: 15px;">
+                        <div class="habit-item" data-habit="night-reflection">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Daily reflection & gratitude</span>
+                            </label>
+                        </div>
+                        <div class="habit-item" data-habit="night-planning">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Plan tomorrow's priorities</span>
+                            </label>
+                        </div>
+                        <div class="habit-item" data-habit="bedtime">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>In bed by 1 AM</span>
+                            </label>
+                            <span class="time-badge">1:00</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Day Learning Blocks -->
-            <div class="section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <span class="icon">🎯</span>
-                        Deep Work Blocks (9:00-5:00 PM)
-                    </h2>
-                </div>
-                <div class="routine-block">
-                    <h3>Block 1: AI/ML Research (9:00-11:30)</h3>
-                    <div class="habit-item" data-habit="ai-research">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Study AI/ML concepts (1 hour)</span>
-                        </label>
+            <!-- Weekend Schedule -->
+            <div id="weekendSchedule" class="schedule-content" style="display: none;">
+                <!-- Morning Routine -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="icon">🌅</span>
+                            Morning
+                        </h2>
                     </div>
-                    <div class="habit-item" data-habit="ai-practice">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Hands-on coding/projects (1.5 hours)</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="routine-block">
-                    <h3>Block 2: Technical Skills (1:00-3:00)</h3>
-                    <div class="habit-item" data-habit="technical-learning">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Advanced topics (Agentic AI, MLOps)</span>
-                        </label>
-                    </div>
-                    <div class="habit-item" data-habit="technical-project">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Build/Deploy something</span>
-                        </label>
+                    <div class="routine-block">
+                        <div class="habit-item" data-habit="weekend-morning-devotion">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Prayer & Devotion</span>
+                            </label>
+                        </div>
+                        <div class="habit-item" data-habit="weekend-gym">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Gym/Exercise (optional)</span>
+                            </label>
+                        </div>
+                        <div class="habit-item" data-habit="sunday-church">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Church Service</span>
+                            </label>
+                            <span class="day-badge">Sunday</span>
+                        </div>
                     </div>
                 </div>
-                <div class="routine-block">
-                    <h3>Block 3: Professional Development (3:00-5:00)</h3>
-                    <div class="habit-item" data-habit="professional-learning">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Leadership/Communication study</span>
-                        </label>
-                    </div>
-                    <div class="habit-item" data-habit="professional-practice">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Practice writing/speaking</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Evening Routine -->
-            <div class="section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <span class="icon">🌆</span>
-                        Evening Routine (6:00-9:00 PM)
-                    </h2>
-                </div>
-                <div class="routine-block">
-                    <div class="habit-item" data-habit="evening-marriage">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Quality time with spouse (1 hour)</span>
-                        </label>
-                        <span class="time-badge">6:00</span>
+                <!-- Deep Work Blocks -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="icon">🚀</span>
+                            Deep Work Time
+                        </h2>
                     </div>
-                    <div class="habit-item" data-habit="evening-finance">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Financial review/planning (30 min)</span>
-                        </label>
-                        <span class="time-badge">7:30</span>
-                    </div>
-                    <div class="habit-item" data-habit="evening-reading">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Read relationship/spiritual book</span>
-                        </label>
-                        <span class="time-badge">8:00</span>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Night Routine -->
-            <div class="section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <span class="icon">🌙</span>
-                        Night Routine (9:00-10:00 PM)
-                    </h2>
+                    <div class="routine-block">
+                        <h3>Saturday - All Day Available</h3>
+                        <div class="habit-item" data-habit="sat-ai-research">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>AI/ML Research (2+ hrs)</span>
+                            </label>
+                        </div>
+                        <div class="habit-item" data-habit="sat-coding">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Coding/Project Work (2+ hrs)</span>
+                            </label>
+                        </div>
+                        <div class="habit-item" data-habit="sat-learning">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Deep learning session (2+ hrs)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="routine-block" style="margin-top: 15px;">
+                        <h3>Sunday - After 5 PM</h3>
+                        <div class="habit-item" data-habit="sun-deep-work">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Evening deep work block (3+ hrs)</span>
+                            </label>
+                            <span class="time-badge">5 PM+</span>
+                        </div>
+                        <div class="info-badge">
+                            ⛪ After church - use evening for learning
+                        </div>
+                    </div>
                 </div>
-                <div class="routine-block">
-                    <div class="habit-item" data-habit="night-reflection">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Daily reflection & gratitude</span>
-                        </label>
-                        <span class="time-badge">9:00</span>
+
+                <!-- Daily Goals -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="icon">📖</span>
+                            Daily Learning
+                        </h2>
                     </div>
-                    <div class="habit-item" data-habit="night-planning">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Plan tomorrow's priorities</span>
-                        </label>
-                        <span class="time-badge">9:20</span>
+                    <div class="routine-block">
+                        <div class="habit-item" data-habit="weekend-ml-reading">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Read ML book/paper</span>
+                            </label>
+                        </div>
+                        <div class="habit-item" data-habit="weekend-personal-reading">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Read personal development book</span>
+                            </label>
+                        </div>
+                        <div class="habit-item" data-habit="weekend-coding">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Code/try something new</span>
+                            </label>
+                        </div>
                     </div>
-                    <div class="habit-item" data-habit="night-winddown">
-                        <label>
-                            <div class="checkbox"></div>
-                            <span>Wind-down routine (no screens)</span>
-                        </label>
-                        <span class="time-badge">9:30</span>
+                </div>
+
+                <!-- Evening/Night -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="icon">🌙</span>
+                            Evening/Night
+                        </h2>
+                    </div>
+                    <div class="routine-block">
+                        <div class="habit-item" data-habit="weekend-spouse-time">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Quality time with spouse</span>
+                            </label>
+                        </div>
+                        <div class="habit-item" data-habit="weekend-reflection">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>Reflection & gratitude</span>
+                            </label>
+                        </div>
+                        <div class="habit-item" data-habit="weekend-bedtime">
+                            <label>
+                                <div class="checkbox"></div>
+                                <span>In bed by 1 AM</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -699,7 +905,7 @@
                 </div>
 
                 <div class="quote-box">
-                    "The man who seeks excellence in one area while neglecting others builds a house on sand. True mastery is holistic growth." - Your Growth Journey
+                    "Consistency beats intensity. Small daily actions compound into extraordinary results." - Your Growth Journey
                 </div>
             </div>
         </div>
@@ -847,6 +1053,10 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="info-badge" style="margin-top: 20px;">
+                    🎯 Goal: Read 1 ML book/paper + 1 personal dev book daily
+                </div>
             </div>
         </div>
 
@@ -941,6 +1151,7 @@
             priorities: {},
             streak: 0,
             lastActive: null,
+            currentDayType: 'weekday',
             pillars: {
                 technical: { progress: 0, notes: [] },
                 spiritual: { progress: 0, notes: [] },
@@ -959,6 +1170,42 @@
             setupBookListeners();
             updateStats();
             checkStreak();
+            detectDayType();
+        }
+
+        // Auto-detect day type
+        function detectDayType() {
+            const now = new Date();
+            const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
+            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+            const savedType = appData.currentDayType || (isWeekend ? 'weekend' : 'weekday');
+            switchDayType(savedType);
+        }
+
+        // Switch between weekday and weekend
+        function switchDayType(type) {
+            appData.currentDayType = type;
+            saveData();
+
+            // Update buttons
+            document.querySelectorAll('.day-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-day-type') === type) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Show/hide schedules
+            if (type === 'weekday') {
+                document.getElementById('weekdaySchedule').style.display = 'block';
+                document.getElementById('weekendSchedule').style.display = 'none';
+            } else {
+                document.getElementById('weekdaySchedule').style.display = 'none';
+                document.getElementById('weekendSchedule').style.display = 'block';
+            }
+
+            updateStats();
         }
 
         // Setup current date
@@ -1076,8 +1323,17 @@
             const today = getTodayKey();
             const todayHabits = appData.habits[today] || {};
 
-            const totalHabits = document.querySelectorAll('[data-habit]').length;
-            const completedHabits = Object.values(todayHabits).filter(v => v).length;
+            // Count visible habits based on day type
+            const visibleHabits = Array.from(document.querySelectorAll('[data-habit]')).filter(el => {
+                return el.offsetParent !== null; // Only visible elements
+            });
+
+            const totalHabits = visibleHabits.length;
+            const completedHabits = visibleHabits.filter(el => {
+                const habitId = el.getAttribute('data-habit');
+                return todayHabits[habitId];
+            }).length;
+
             const completionRate = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0;
 
             document.getElementById('completionRate').textContent = `${completionRate}%`;
@@ -1090,16 +1346,14 @@
             const yesterday = getYesterdayKey();
 
             if (appData.lastActive === yesterday) {
-                // Continue streak if completed yesterday
                 const yesterdayHabits = appData.habits[yesterday] || {};
                 const completedCount = Object.values(yesterdayHabits).filter(v => v).length;
-                if (completedCount >= 5) { // At least 5 habits completed
+                if (completedCount >= 5) {
                     if (appData.lastActive !== today) {
                         appData.streak++;
                     }
                 }
             } else if (appData.lastActive !== today && appData.lastActive !== yesterday) {
-                // Reset streak if missed a day
                 appData.streak = 0;
             }
 
@@ -1120,14 +1374,13 @@
             const today = getTodayKey();
             const todayHabits = appData.habits[today] || {};
 
-            // Calculate progress for each pillar based on completed habits
             const pillarMapping = {
-                technical: ['ai-research', 'ai-practice', 'technical-learning', 'technical-project'],
-                spiritual: ['morning-prayer', 'evening-reading'],
-                financial: ['evening-finance'],
-                emotional: ['morning-reading', 'night-reflection'],
-                relational: ['evening-marriage', 'professional-practice'],
-                physical: ['morning-exercise', 'night-winddown']
+                technical: ['ml-reading', 'code-practice', 'sat-ai-research', 'sat-coding', 'sat-learning', 'sun-deep-work', 'weekend-ml-reading', 'weekend-coding'],
+                spiritual: ['morning-devotion', 'weekend-morning-devotion', 'sunday-church', 'personal-dev-reading', 'weekend-personal-reading'],
+                financial: ['lloyds-work', 'udacity-work'],
+                emotional: ['night-reflection', 'weekend-reflection'],
+                relational: ['spouse-time', 'weekend-spouse-time'],
+                physical: ['gym-session', 'weekend-gym', 'bedtime', 'weekend-bedtime']
             };
 
             Object.keys(pillarMapping).forEach(pillar => {
@@ -1165,11 +1418,9 @@
 
         // Switch pages
         function switchPage(page) {
-            // Hide all pages
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-            // Show selected page
             document.getElementById(`${page}Page`).classList.add('active');
             event.currentTarget.classList.add('active');
         }
@@ -1183,98 +1434,98 @@
             const pillarData = {
                 technical: {
                     title: '🤖 Technical/AI Growth',
-                    description: 'Building world-class AI/ML skills',
-                    resources: [
-                        'Agentic AI Engineering - Advanced agent systems',
-                        'Generative Deep Learning - Create AI models',
-                        'Practical MLOps - Deploy at scale',
-                        'Essential Math - Foundation for understanding'
+                    description: 'Building world-class AI/ML engineering skills',
+                    focus: [
+                        'Weekend deep work blocks are your power hours',
+                        'Daily: 1 ML book/paper + code something new',
+                        'Saturday: Full day for learning and building',
+                        'Sunday evenings: Deep work after church'
                     ],
                     goals: [
                         'Master agentic AI architectures',
-                        'Build and deploy 3 production AI systems',
-                        'Contribute to open-source AI projects',
-                        'Write technical articles/papers'
+                        'Build production-ready AI systems',
+                        'Contribute to research/open-source',
+                        'Publish papers or technical articles'
                     ]
                 },
                 spiritual: {
                     title: '🙏 Spiritual Growth',
-                    description: 'Deepening faith and purpose',
-                    resources: [
-                        '100 Days of Favor - Daily devotional',
-                        'Morning prayer and meditation',
-                        'Scripture study and reflection',
-                        'Service and generosity'
+                    description: 'Faith, character, and purpose',
+                    focus: [
+                        'Morning devotion while preparing (6-7 AM)',
+                        'Christian music, confessions of faith',
+                        'Sunday church attendance',
+                        'Daily gratitude and reflection'
                     ],
                     goals: [
                         'Consistent daily devotion',
-                        'Deeper understanding of purpose',
-                        'Lead with integrity and character',
+                        'Deeper faith and trust',
+                        'Lead with integrity',
                         'Impact others positively'
                     ]
                 },
                 financial: {
                     title: '💰 Financial Growth',
-                    description: 'Building wealth and security',
-                    resources: [
-                        'Economics fundamentals',
-                        'Investment strategies',
-                        'Passive income streams',
-                        'Financial planning'
+                    description: 'Wealth, security, and freedom',
+                    focus: [
+                        'Lloyds Bank work (primary income)',
+                        'Udacity course content (secondary income)',
+                        'Build investment portfolio',
+                        'Track and optimize spending'
                     ],
                     goals: [
-                        'Increase income by X%',
+                        'Maximize income from both sources',
                         'Build emergency fund',
-                        'Create passive income',
+                        'Create passive income streams',
                         'Invest wisely for future'
                     ]
                 },
                 emotional: {
                     title: '🧠 Emotional Intelligence',
-                    description: 'Mastering emotions and resilience',
-                    resources: [
-                        'Confidence - Build unshakeable belief',
-                        'On Failure - Learn from setbacks',
-                        'Stolen Focus - Protect your attention',
-                        'Self-awareness practices'
+                    description: 'Self-mastery and resilience',
+                    focus: [
+                        'Daily reflection on wins and improvements',
+                        'Process challenges with perspective',
+                        'Maintain calm under pressure',
+                        'Build genuine confidence'
                     ],
                     goals: [
-                        'Develop emotional regulation',
-                        'Build genuine confidence',
-                        'Practice mindfulness daily',
-                        'Respond vs react to challenges'
+                        'Emotional regulation',
+                        'Respond vs react',
+                        'Build unshakeable confidence',
+                        'Practice mindfulness'
                     ]
                 },
                 relational: {
                     title: '❤️ Relationship Growth',
                     description: 'Strong marriage and connections',
-                    resources: [
-                        'Point Man - Lead in marriage',
-                        'Quality time practices',
-                        'Communication skills',
-                        'Skilled in words - persuasion & empathy'
+                    focus: [
+                        'Evening calls with wife (she\'s in Oklahoma)',
+                        'Quality over quantity',
+                        'Active listening and presence',
+                        'Regular expressions of appreciation'
                     ],
                     goals: [
-                        'Daily quality time with spouse',
-                        'Active listening and presence',
-                        'Express appreciation regularly',
-                        'Build deep friendships'
+                        'Deep connection despite distance',
+                        'Support her dreams and goals',
+                        'Plan visits and future together',
+                        'Build strong friendships too'
                     ]
                 },
                 physical: {
                     title: '💪 Physical Vitality',
-                    description: 'Energy and health optimization',
-                    resources: [
-                        'Morning exercise routine',
-                        'Nutrition fundamentals',
-                        'Sleep optimization',
-                        'Stress management'
+                    description: 'Health, energy, and strength',
+                    focus: [
+                        'Gym 3x/week (Mon/Wed/Fri, 7:15-9 AM)',
+                        'Maintain workout consistency',
+                        'Good sleep (aim for before 1 AM)',
+                        'Nutrition and recovery'
                     ],
                     goals: [
-                        'Exercise 5x per week',
-                        'Optimize energy levels',
+                        'Consistent gym attendance',
                         'Build strength and endurance',
-                        'Maintain healthy habits'
+                        'Optimize energy levels',
+                        'Long-term health and vitality'
                     ]
                 }
             };
@@ -1285,9 +1536,9 @@
             let html = `
                 <p style="margin-bottom: 20px; color: var(--text-light);">${data.description}</p>
 
-                <h4 style="margin-bottom: 10px; color: var(--primary);">Key Resources</h4>
+                <h4 style="margin-bottom: 10px; color: var(--primary);">Current Focus</h4>
                 <ul style="margin-bottom: 20px; padding-left: 20px;">
-                    ${data.resources.map(r => `<li style="margin-bottom: 8px;">${r}</li>`).join('')}
+                    ${data.focus.map(f => `<li style="margin-bottom: 8px;">${f}</li>`).join('')}
                 </ul>
 
                 <h4 style="margin-bottom: 10px; color: var(--primary);">Growth Goals</h4>
